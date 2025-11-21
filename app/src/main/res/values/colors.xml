@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="work_Color">#4CAF50</color>
+    <color name="break_Color">#2196F3</color>
+
+    <color name="purple_500">#6200EE</color>
+    <color name="gray">#E0E0E0</color>
+    <color name="accent">#FF5722</color>
+    <color name="break_color">#4CAF50</color>
+</resources>
