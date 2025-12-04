@@ -10,4 +10,6 @@
     <color name="neumorphicShadow2">#CBD6E6</color>
     <color name="textPrimary">#222222</color>
     <color name="textSecondary">#6B7280</color>
+    <color name="grey_background">#F2F2F2</color>
+
 </resources>

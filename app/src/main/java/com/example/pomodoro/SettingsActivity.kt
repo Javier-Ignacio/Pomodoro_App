@@ -5,14 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.pomodoro.adapter.SoundAdapter
 import com.example.pomodoro.databinding.ActivitySettingsBinding
-import com.example.pomodoro.SettingsActivity
 import com.example.pomodoro.util.SoundManager
+import com.google.android.material.slider.Slider
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
 
-    // lista de sonidos (id, nombre, recurso)
     private val sounds = listOf(
         SoundItem(1, "Alarm", R.raw.alarm),
         SoundItem(2, "Clock", R.raw.clock),
@@ -27,18 +26,44 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val prefs = getSharedPreferences("config", MODE_PRIVATE)
-        val selected = prefs.getInt("selected_sound", R.raw.notificacion)
 
+        // ---------------------------
+        // Configuración de sonido
+        // ---------------------------
+        val selected = prefs.getInt("selected_sound", R.raw.notificacion)
         val adapter = SoundAdapter(this, sounds, selected) { item ->
             prefs.edit().putInt("selected_sound", item.res).apply()
         }
-
         binding.recyclerSounds.layoutManager = LinearLayoutManager(this)
         binding.recyclerSounds.adapter = adapter
 
+        // ---------------------------
+        // Configuración de tiempos
+        // ---------------------------
+        binding.sliderPomodoro.value = prefs.getInt("time_pomodoro", 25).toFloat()
+        binding.sliderShortBreak.value = prefs.getInt("time_short_break", 5).toFloat()
+
+        binding.tvPomodoroValue.text = "${binding.sliderPomodoro.value.toInt()} min"
+        binding.tvShortBreakValue.text = "${binding.sliderShortBreak.value.toInt()} min"
+
+        binding.sliderPomodoro.addOnChangeListener { _: Slider, value: Float, _: Boolean ->
+            binding.tvPomodoroValue.text = "${value.toInt()} min"
+        }
+        binding.sliderShortBreak.addOnChangeListener { _: Slider, value: Float, _: Boolean ->
+            binding.tvShortBreakValue.text = "${value.toInt()} min"
+        }
+
+        // ---------------------------
+        // Guardar configuraciones
+        // ---------------------------
         binding.btnSaveSound.setOnClickListener {
-            // ya guardamos al seleccionar; aquí podemos cerrar
+            prefs.edit()
+                .putInt("time_pomodoro", binding.sliderPomodoro.value.toInt())
+                .putInt("time_short_break", binding.sliderShortBreak.value.toInt())
+                .apply()
+
             SoundManager.stop()
+            setResult(RESULT_OK) // <- indica a MainActivity recargar tiempos
             finish()
         }
     }

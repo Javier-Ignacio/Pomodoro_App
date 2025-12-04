@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -17,11 +18,18 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var countDownTimer: CountDownTimer? = null
-
     private var isBreak = false
 
-    private val pomodoroDuration = 5 * 1000L // Tiemmpo duración pomodoro
-    private val breakDuration = 3 * 1000L    // Tiempo duración break
+    private var pomodoroDurationMs = 25 * 60 * 1000L
+    private var breakDurationMs = 5 * 60 * 1000L
+
+    private val settingsLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            loadConfigDurations()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,8 +37,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         requestNotificationPermission()
+        loadConfigDurations()
 
-        // init UI
         binding.tvStatus.text = "Listo"
 
         binding.btnStart.setOnClickListener { startPomodoro() }
@@ -38,10 +46,20 @@ class MainActivity : AppCompatActivity() {
         binding.btnStats.setOnClickListener {
             startActivity(Intent(this, StatsActivity::class.java))
         }
-
         binding.fabSettings.setOnClickListener {
-            startActivity(Intent(this, SettingsActivity::class.java))
+            settingsLauncher.launch(Intent(this, SettingsActivity::class.java))
         }
+
+        // Mostrar frase inicial
+        loadMotivationQuote()
+    }
+
+    private fun loadConfigDurations() {
+        val prefs = getSharedPreferences("config", MODE_PRIVATE)
+        val pomodoroMinutes = prefs.getInt("time_pomodoro", 25)
+        val breakMinutes = prefs.getInt("time_short_break", 5)
+        pomodoroDurationMs = pomodoroMinutes * 60 * 1000L
+        breakDurationMs = breakMinutes * 60 * 1000L
     }
 
     private fun playSelectedSound() {
@@ -64,67 +82,70 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun animateIndicator(from: Int, to: Int) {
-        // usaremos ObjectAnimator sobre la propiedad "progress" del CircularProgressIndicator
         val animator = ObjectAnimator.ofInt(binding.progressCircular, "progress", from, to)
         animator.duration = 600
         animator.start()
     }
 
+    // -------------------------------
+    // Pomodoro
+    // -------------------------------
     private fun startPomodoro() {
         isBreak = false
         countDownTimer?.cancel()
-
         binding.progressCircular.setIndicatorColor(ContextCompat.getColor(this, R.color.primary))
         binding.tvStatus.text = "Trabajo"
 
-        // playSelectedSound()
+        // Cargar frase motivacional para Pomodoro
+        loadMotivationQuote()
 
-        countDownTimer = object : CountDownTimer(pomodoroDuration + 100, 1000) { // ← extra 100 ms
+        val totalTime = pomodoroDurationMs
+
+        countDownTimer = object : CountDownTimer(totalTime + 150, 1000) {
             override fun onTick(ms: Long) {
-                val safeMs = if (ms < 1000) 0 else ms   // ← evita valores negativos
-
+                val safeMs = if (ms < 1000) 0 else ms
                 val min = safeMs / 60000
                 val sec = (safeMs % 60000) / 1000
                 binding.tvTimer.text = String.format("%02d:%02d", min, sec)
-
-                val progress = ((pomodoroDuration - safeMs).toFloat() / pomodoroDuration * 100).toInt()
+                val progress = ((totalTime - safeMs).toFloat() / totalTime * 100).toInt()
                 animateIndicator(binding.progressCircular.progress, progress)
             }
 
             override fun onFinish() {
-                // 1️⃣ --- MOSTRAR 00:00 SIEMPRE ---
                 binding.tvTimer.text = "00:00"
                 animateIndicator(binding.progressCircular.progress, 100)
 
-                // 2️⃣ --- PAUSA BREVE PARA QUE SE VEA 00:00 ---
                 Handler(Looper.getMainLooper()).postDelayed({
                     playSelectedSound()
-                    PomodoroRepository(this@MainActivity).addPomodoro()
+                    PomodoroRepository(this@MainActivity).addPomodoro((totalTime / 60000).toInt())
                     showNotification()
                     startBreak()
-                }, 800)  // 0.8 segundos
+                }, 700)
             }
-        }.apply { start() }
+        }.start()
     }
 
+    // -------------------------------
+    // Descanso
+    // -------------------------------
     private fun startBreak() {
         isBreak = true
         countDownTimer?.cancel()
-
         binding.progressCircular.setIndicatorColor(ContextCompat.getColor(this, R.color.accent))
         binding.tvStatus.text = "Descanso"
 
+        // Cargar frase motivacional para Descanso
         loadMotivationQuote()
 
-        countDownTimer = object : CountDownTimer(breakDuration + 100, 1000) {
+        val totalTime = breakDurationMs
+
+        countDownTimer = object : CountDownTimer(totalTime + 150, 1000) {
             override fun onTick(ms: Long) {
                 val safeMs = if (ms < 1000) 0 else ms
-
                 val min = safeMs / 60000
                 val sec = (safeMs % 60000) / 1000
                 binding.tvTimer.text = "Descanso: ${String.format("%02d:%02d", min, sec)}"
-
-                val progress = ((breakDuration - safeMs).toFloat() / breakDuration * 100).toInt()
+                val progress = ((totalTime - safeMs).toFloat() / totalTime * 100).toInt()
                 animateIndicator(binding.progressCircular.progress, progress)
             }
 
@@ -132,8 +153,10 @@ class MainActivity : AppCompatActivity() {
                 binding.tvTimer.text = "Descanso terminado"
                 animateIndicator(binding.progressCircular.progress, 100)
                 binding.tvStatus.text = "Listo"
+                // Preparar nueva frase para el próximo Pomodoro
+                loadMotivationQuote()
             }
-        }.apply { start() }
+        }.start()
     }
 
     private fun stopPomodoro() {
@@ -155,9 +178,10 @@ class MainActivity : AppCompatActivity() {
         manager.notify(1001, builder.build())
     }
 
-    // ---------- API Quote (ZenQuotes) ----------
+    // -------------------------------
+    // Función para cargar frases motivacionales
+    // -------------------------------
     private fun loadMotivationQuote() {
-        // tu implementación con Retrofit (ya funcional)
         binding.tvQuote.text = "Cargando..."
         com.example.pomodoro.api.RetrofitClient.instance.getRandomQuote()
             .enqueue(object : retrofit2.Callback<List<com.example.pomodoro.data.MotivationQuote>> {
@@ -178,7 +202,10 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: retrofit2.Call<List<com.example.pomodoro.data.MotivationQuote>>, t: Throwable) {
+                override fun onFailure(
+                    call: retrofit2.Call<List<com.example.pomodoro.data.MotivationQuote>>,
+                    t: Throwable
+                ) {
                     binding.tvQuote.text = "Frase offline."
                 }
             })

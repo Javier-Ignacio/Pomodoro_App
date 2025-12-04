@@ -1,35 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:padding="16dp"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="16dp"
     android:background="@color/background">
 
-    <TextView
-        android:id="@+id/tvSettingsTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sonido de notificación"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="12dp"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerSounds"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="end">
+        android:layout_height="wrap_content">
+
+        <!-- Título Sonidos -->
+        <TextView
+            android:id="@+id/tvSettingsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sonido de notificación"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerSounds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- SECCIÓN DE CONFIGURACIÓN DE TIEMPOS -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tiempos"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Pomodoro -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pomodoro" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/sliderPomodoro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="1"
+            android:valueTo="60"
+            android:stepSize="1" />
+
+        <TextView
+            android:id="@+id/tvPomodoroValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="25 min"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Descanso corto -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Descanso corto" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/sliderShortBreak"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:valueFrom="1"
+            android:valueTo="15"
+            android:stepSize="1" />
+
+        <TextView
+            android:id="@+id/tvShortBreakValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5 min"
+            android:layout_marginBottom="16dp" />
 
         <Button
             android:id="@+id/btnSaveSound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Guardar" />
+            android:text="Guardar"
+            android:layout_gravity="end" />
+
     </LinearLayout>
-</LinearLayout>
+
+</ScrollView>
