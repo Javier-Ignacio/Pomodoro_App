@@ -1,9 +1,30 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Pomodoro" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Tema principal -->
+    <style name="Theme.Pomodoro" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primaryDark</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="android:statusBarColor">@color/primaryDark</item>
+        <item name="android:fontFamily">@font/poppins</item>
+
+        <!-- Aplica tu estilo global de botones -->
+        <item name="materialButtonStyle">@style/Widget.Pomodoro.Button</item>
     </style>
 
-    <style name="Theme.Pomodoro" parent="Base.Theme.Pomodoro" />
+    <!-- Estilo premium para botones -->
+    <style name="Widget.Pomodoro.Button" parent="Widget.MaterialComponents.Button">
+        <item name="shapeAppearance">@style/ShapePill</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+    </style>
+
+    <!-- Forma pill (pastilla) corregida -->
+    <style name="ShapePill">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
 </resources>

@@ -1,75 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:padding="20dp"
+    android:background="#F3F6FB">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ProgressBar
-            android:id="@+id/progressCircular"
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="230dp"
-            android:layout_height="230dp"
-            android:max="100"
-            android:progress="100"
-            android:indeterminate="false"
-            android:rotation="-90"
-            android:progressDrawable="@drawable/circle_progress_work"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
 
         <TextView
-            android:id="@+id/tvTimer"
-            android:text="25:00"
-            android:textSize="36sp"
-            android:layout_marginTop="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"/>
-
-        <TextView
-            android:id="@+id/tvQuote"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
-            android:paddingTop="12dp"
-            android:textSize="16sp"
-            android:gravity="center"/>
+            android:text="Pomodoro"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="#000"
+            android:layout_marginBottom="24dp"/>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:orientation="horizontal">
+            android:padding="24dp"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            android:elevation="6dp">
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Listo"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#666"
+                android:layout_gravity="center"
+                android:layout_marginBottom="16dp"/>
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/progressCircular"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="100"
+                android:layout_gravity="center"
+                app:trackThickness="12dp"
+                app:indicatorSize="200dp" />
+
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="25:00"
+                android:textSize="46sp"
+                android:textStyle="bold"
+                android:textColor="#000"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"/>
 
             <Button
                 android:id="@+id/btnStart"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Iniciar" />
+                android:text="Iniciar"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="#4CAF50"
+                android:textColor="#FFF"/>
 
             <Button
                 android:id="@+id/btnStop"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:text="Parar" />
+                android:text="Detener"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="#E53935"
+                android:textColor="#FFF"/>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvQuote"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:layout_marginTop="24dp"
+            android:text="Tu frase aparecerá aquí"
+            android:textColor="#000"
+            android:textSize="18sp"
+            android:background="@drawable/card_background"/>
 
         <Button
             android:id="@+id/btnStats"
-            android:text="Ver estadísticas"
-            android:layout_marginTop="20dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="Ver estadísticas"
+            android:layout_marginTop="30dp"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            android:backgroundTint="#1ABC9C"
+            android:textColor="#FFF"/>
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabSettings"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_baseline_settings_24"
+            android:contentDescription="Settings"
+            app:backgroundTint="@color/primary"
+            android:layout_margin="16dp"
+            />
     </LinearLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
